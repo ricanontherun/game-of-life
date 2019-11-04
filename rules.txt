@@ -1,0 +1,7 @@
+A cell will need to know about all 8 of it's neighbors (or at least the states of them).
+Storing just the cell states might help reduce memory usage by avoiding object references and just storing integers.
+
+The grid can be represented by a N x M multidimensional array. Given a coordinate pair, we should be able to calculate the precise coordinate
+pair of all of the neighbors of a particular cell.
+
+Boundaries can be interpreted as a "toroidal" array, where the top/bottom and left/right borders are essentially stiched into a single plane.
