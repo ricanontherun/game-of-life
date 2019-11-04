@@ -1,9 +1,9 @@
 package grid
 
-type CellType int
+type cellType int
 
 type Grid struct {
-	grid       [][]CellType
+	grid       [][]GridCell
 	dimensions GridDimensions
 	boundaries GridBoundaries
 }
@@ -28,8 +28,8 @@ type GridCellPosition struct {
 }
 
 type GridCell struct {
-	value CellType
-	pos   GridCellPosition
+	Value cellType
+	Pos   GridCellPosition
 }
 
 type delta struct {

@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/ricanontherun/conway/src/grid"
+	"github.com/ricanontherun/game-of-life/src/grid"
 	"time"
 )
 
 func printGrid(g *grid.Grid) {
-	g.IterateRows(func(index int, row []grid.CellType) {
+	g.IterateRows(func(index int, row []grid.GridCell) {
 		for colI := range row {
 			fmt.Print(fmt.Sprintf("%d", g.GetCell(grid.GridCellPosition{
 				Row: index,
@@ -27,11 +27,10 @@ func evolve(g grid.Grid) *grid.Grid {
 	newGrid := g.Clone()
 
 	// Generate new population.
-	g.IterateCells(func(row int, col int, value grid.CellType) {
-		newGrid.SetCell(value, grid.GridCellPosition{
-			Row: row,
-			Col: col,
-		})
+	g.IterateCells(func(cell grid.GridCell) {
+		evolvedCell := cell
+
+		newGrid.SetCell(evolvedCell)
 	})
 
 	return newGrid

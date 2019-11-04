@@ -5,14 +5,14 @@ import (
 	"testing"
 )
 
-func getRandomTable(rows int, cols int) [][]CellType {
-	table := make([][]CellType, rows)
+func getRandomTable(rows int, cols int) [][]cellType {
+	table := make([][]cellType, rows)
 
 	for i := range table {
-		row := make([]CellType, cols)
+		row := make([]cellType, cols)
 
 		for i := 0; i < cols; i++ {
-			row[i] = CellType(rand.Int())
+			row[i] = cellType(rand.Int())
 		}
 
 		table[i] = row
@@ -56,12 +56,15 @@ func TestGridInitialization(t *testing.T) {
 func TestSetCell(t *testing.T) {
 	g := NewGrid(10, 10)
 
-	g.SetCell(13, GridCellPosition{
-		Row: 2,
-		Col: 1,
+	g.SetCell(GridCell{
+		13,
+		GridCellPosition{
+			2,
+			1,
+		},
 	})
 
-	if g.grid[2][1] != 13 {
+	if g.grid[2][1].Value != 13 {
 		t.Error("Failed to set cell value")
 	}
 }
@@ -70,19 +73,19 @@ func TestGetCell(t *testing.T) {
 	g := NewGrid(10, 10)
 
 	// Prop up some data
-	g.grid[9][2] = 100
+	g.grid[9][2].Value = 100
 
 	if g.GetCell(GridCellPosition{
 		Row: 9,
 		Col: 2,
-	}) != 100 {
+	}).Value != 100 {
 		t.Error("Cell value should have been 100")
 	}
 
 	if g.GetCell(GridCellPosition{
 		Row: 0,
 		Col: 0,
-	}) != 0 {
+	}).Value != 0 {
 		t.Error("Cell value should have been 0")
 	}
 }
@@ -123,7 +126,7 @@ func TestGetRelativeNeighbor(t *testing.T) {
 			Col: test.centralCol,
 		}, test.deltaLabel)
 
-		if neighbor.value != g.grid[test.expectedRow][test.expectedCol] {
+		if neighbor.Value != g.grid[test.expectedRow][test.expectedCol].Value {
 			t.Errorf("BAN")
 		}
 	}
