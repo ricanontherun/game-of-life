@@ -30,6 +30,30 @@ func evolve(g grid.Grid) *grid.Grid {
 	g.IterateCells(func(cell grid.GridCell) {
 		evolvedCell := cell
 
+		aliveCount := 0
+
+		for _, neighbor := range g.GetNeighbors(cell) {
+			if neighbor.Value == 1 {
+				aliveCount++
+			}
+
+			if aliveCount == 4 { // 4 is the highest number of meaningful live neighbors
+				break
+			}
+		}
+
+		if cell.Value == 1 { // Live actions
+			if aliveCount < 2 {
+				evolvedCell.Value = 0
+			} else if aliveCount > 3 {
+				evolvedCell.Value = 0
+			}
+		} else {
+			if aliveCount == 3 {
+				evolvedCell.Value = 1
+			}
+		}
+
 		newGrid.SetCell(evolvedCell)
 	})
 

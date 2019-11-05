@@ -68,8 +68,10 @@ func (g Grid) SetCell(cell GridCell) {
 	g.grid[cell.Pos.Row][cell.Pos.Col] = cell
 }
 
-func (g Grid) GetNeighbors(pos GridCellPosition) map[string]GridCell {
+func (g Grid) GetNeighbors(cell GridCell) map[string]GridCell {
 	neighbors := make(map[string]GridCell)
+
+	pos := cell.Pos
 
 	neighbors["tl"] = g.getRelativeNeighbor(pos, "tl")
 	neighbors["tc"] = g.getRelativeNeighbor(pos, "tc")
