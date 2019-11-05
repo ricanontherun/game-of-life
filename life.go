@@ -6,13 +6,15 @@ import (
 	"time"
 )
 
+type GameBoard struct {
+	g          *grid.Grid
+	generation int
+}
+
 func printGrid(g *grid.Grid) {
 	g.IterateRows(func(index int, row []grid.GridCell) {
-		for colI := range row {
-			fmt.Print(fmt.Sprintf("%d", g.GetCell(grid.GridCellPosition{
-				Row: index,
-				Col: colI,
-			})))
+		for colI, cell := range row {
+			fmt.Print(fmt.Sprintf("%d", cell.Value))
 
 			if colI != len(row) {
 				fmt.Print(" ")
@@ -61,15 +63,45 @@ func evolve(g grid.Grid) *grid.Grid {
 }
 
 func main() {
-	g := grid.NewGrid(5, 10)
+	board := GameBoard{
+		g:          grid.NewGrid(10, 10),
+		generation: 0,
+	}
 
-	generation := 0
+	// Setup an initial configuration.
+	board.g.SetCell(grid.GridCell{
+		Value: 1,
+		Pos: grid.GridCellPosition{
+			Row: 3,
+			Col: 5,
+		},
+	})
+
+	board.g.SetCell(grid.GridCell{
+		Value: 1,
+		Pos: grid.GridCellPosition{
+			Row: 4,
+			Col: 5,
+		},
+	})
+
+	board.g.SetCell(grid.GridCell{
+		Value: 1,
+		Pos: grid.GridCellPosition{
+			Row: 5,
+			Col: 5,
+		},
+	})
+
+	board.generation = 1
+	fmt.Printf("Generation: %d\n", board.generation)
+	printGrid(board.g)
+
 	for _ = range time.Tick(time.Second) {
-		generation += 1
-
-		fmt.Printf("Generation: %d\n", generation)
-
-		printGrid(evolve(*g))
+		board.generation += 1
+		fmt.Printf("Generation: %d\n", board.generation)
+		board.g = evolve(*board.g)
+		printGrid(board.g)
 
 		break
 	}
