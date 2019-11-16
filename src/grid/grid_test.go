@@ -93,7 +93,7 @@ func TestGetCell(t *testing.T) {
 func TestGetRelativeNeighbor(t *testing.T) {
 	g := NewGrid(5, 5)
 	randomTable := getRandomTable(5, 5)
-	g.initialize(randomTable)
+	g.Initialize(randomTable)
 
 	type testRow struct {
 		centralRow  int
@@ -127,7 +127,7 @@ func TestGetRelativeNeighbor(t *testing.T) {
 		}, test.deltaLabel)
 
 		if neighbor.Value != g.grid[test.expectedRow][test.expectedCol].Value {
-			t.Errorf("BAN")
+			t.Errorf("Computed neighbor was incorrect")
 		}
 	}
 }

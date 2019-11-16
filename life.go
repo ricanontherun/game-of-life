@@ -31,28 +31,19 @@ func evolve(g grid.Grid) *grid.Grid {
 	// Generate new population.
 	g.IterateCells(func(cell grid.GridCell) {
 		evolvedCell := cell
+		aliveCount := g.GetLiveNeighborCount(cell)
 
-		aliveCount := 0
-
-		for _, neighbor := range g.GetNeighbors(cell) {
-			if neighbor.Value == 1 {
-				aliveCount++
-			}
-
-			if aliveCount == 4 { // 4 is the highest number of meaningful live neighbors
-				break
-			}
-		}
-
-		if cell.Value == 1 { // Live actions
+		if cell.IsAlive() { // Live actions
 			if aliveCount < 2 {
-				evolvedCell.Value = 0
+				// Any live cell with fewer than two live neighbors dies
+				evolvedCell.Kill()
 			} else if aliveCount > 3 {
-				evolvedCell.Value = 0
+				// Any live cell with more than 3 neighbors dies
+				evolvedCell.Kill()
 			}
 		} else {
 			if aliveCount == 3 {
-				evolvedCell.Value = 1
+				evolvedCell.Resurrect()
 			}
 		}
 
@@ -88,8 +79,15 @@ func main() {
 	board.g.SetCell(grid.GridCell{
 		Value: 1,
 		Pos: grid.GridCellPosition{
-			Row: 5,
-			Col: 5,
+			Row: 3,
+			Col: 6,
+		},
+	})
+	board.g.SetCell(grid.GridCell{
+		Value: 1,
+		Pos: grid.GridCellPosition{
+			Row: 4,
+			Col: 6,
 		},
 	})
 
@@ -102,7 +100,5 @@ func main() {
 		fmt.Printf("Generation: %d\n", board.generation)
 		board.g = evolve(*board.g)
 		printGrid(board.g)
-
-		break
 	}
 }

@@ -40,13 +40,13 @@ func NewGrid(rows int, cols int) *Grid {
 }
 
 // Utility function for tests.
-func (g Grid) initialize(table [][]cellType) {
-	assert(len(table) == g.dimensions.rows, "Invalid initialize size (rows)")
-	assert(len(table[0]) == g.dimensions.cols, "Invalid initialize size (cols)")
+func (grid Grid) Initialize(table [][]cellType) {
+	assert(len(table) == grid.dimensions.rows, "Invalid Initialize size (rows)")
+	assert(len(table[0]) == grid.dimensions.cols, "Invalid Initialize size (cols)")
 
 	for rowI, row := range table {
 		for colI, _ := range row {
-			g.SetCell(GridCell{
+			grid.SetCell(GridCell{
 				Value: table[rowI][colI],
 				Pos:   GridCellPosition{rowI, colI},
 			})
@@ -54,38 +54,50 @@ func (g Grid) initialize(table [][]cellType) {
 	}
 }
 
-func (g Grid) GetCell(pos GridCellPosition) GridCell {
-	assertRowBoundary(g, pos.Row)
-	assertColBoundary(g, pos.Col)
+func (grid Grid) GetCell(pos GridCellPosition) GridCell {
+	assertRowBoundary(grid, pos.Row)
+	assertColBoundary(grid, pos.Col)
 
-	return g.grid[pos.Row][pos.Col]
+	return grid.grid[pos.Row][pos.Col]
 }
 
-func (g Grid) SetCell(cell GridCell) {
-	assertRowBoundary(g, cell.Pos.Row)
-	assertColBoundary(g, cell.Pos.Col)
+func (grid Grid) SetCell(cell GridCell) {
+	assertRowBoundary(grid, cell.Pos.Row)
+	assertColBoundary(grid, cell.Pos.Col)
 
-	g.grid[cell.Pos.Row][cell.Pos.Col] = cell
+	grid.grid[cell.Pos.Row][cell.Pos.Col] = cell
 }
 
-func (g Grid) GetNeighbors(cell GridCell) map[string]GridCell {
+func (grid Grid) GetNeighbors(cell GridCell) map[string]GridCell {
 	neighbors := make(map[string]GridCell)
 
 	pos := cell.Pos
 
-	neighbors["tl"] = g.getRelativeNeighbor(pos, "tl")
-	neighbors["tc"] = g.getRelativeNeighbor(pos, "tc")
-	neighbors["tr"] = g.getRelativeNeighbor(pos, "tr")
-	neighbors["l"] = g.getRelativeNeighbor(pos, "l")
-	neighbors["r"] = g.getRelativeNeighbor(pos, "r")
-	neighbors["bl"] = g.getRelativeNeighbor(pos, "bl")
-	neighbors["bc"] = g.getRelativeNeighbor(pos, "bc")
-	neighbors["br"] = g.getRelativeNeighbor(pos, "br")
+	neighbors["tl"] = grid.getRelativeNeighbor(pos, "tl")
+	neighbors["tc"] = grid.getRelativeNeighbor(pos, "tc")
+	neighbors["tr"] = grid.getRelativeNeighbor(pos, "tr")
+	neighbors["l"] = grid.getRelativeNeighbor(pos, "l")
+	neighbors["r"] = grid.getRelativeNeighbor(pos, "r")
+	neighbors["bl"] = grid.getRelativeNeighbor(pos, "bl")
+	neighbors["bc"] = grid.getRelativeNeighbor(pos, "bc")
+	neighbors["br"] = grid.getRelativeNeighbor(pos, "br")
 
 	return neighbors
 }
 
-func (g Grid) getRelativeNeighbor(pos GridCellPosition, deltaLabel string) GridCell {
+func (grid Grid) GetLiveNeighborCount(cell GridCell) int {
+	liveNeighbors := 0
+
+	for _, neighbor := range grid.GetNeighbors(cell) {
+		if neighbor.IsAlive() {
+			liveNeighbors++
+		}
+	}
+
+	return liveNeighbors
+}
+
+func (grid Grid) getRelativeNeighbor(pos GridCellPosition, deltaLabel string) GridCell {
 	delta, exists := deltaMap[deltaLabel]
 	if !exists {
 		panic(errors.New("bad delta"))
@@ -98,35 +110,35 @@ func (g Grid) getRelativeNeighbor(pos GridCellPosition, deltaLabel string) GridC
 	neighborPosition.Col += delta.deltaCol
 
 	// Wrap any values which have left the board.
-	if neighborPosition.Row < g.boundaries.top {
-		neighborPosition.Row = g.boundaries.bottom
-	} else if neighborPosition.Row > g.boundaries.bottom {
-		neighborPosition.Row = g.boundaries.top
+	if neighborPosition.Row < grid.boundaries.top {
+		neighborPosition.Row = grid.boundaries.bottom
+	} else if neighborPosition.Row > grid.boundaries.bottom {
+		neighborPosition.Row = grid.boundaries.top
 	}
 
-	if neighborPosition.Col < g.boundaries.left {
-		neighborPosition.Col = g.boundaries.right
-	} else if neighborPosition.Col > g.boundaries.right {
-		neighborPosition.Col = g.boundaries.left
+	if neighborPosition.Col < grid.boundaries.left {
+		neighborPosition.Col = grid.boundaries.right
+	} else if neighborPosition.Col > grid.boundaries.right {
+		neighborPosition.Col = grid.boundaries.left
 	}
 
-	return g.GetCell(neighborPosition)
+	return grid.GetCell(neighborPosition)
 }
 
-func (g Grid) IterateRows(cb func(index int, row []GridCell)) {
-	for index, row := range g.grid {
+func (grid Grid) IterateRows(cb func(index int, row []GridCell)) {
+	for index, row := range grid.grid {
 		cb(index, row)
 	}
 }
 
-func (g Grid) IterateCells(cb func(cell GridCell)) {
-	g.IterateRows(func(rowIndex int, row []GridCell) {
+func (grid Grid) IterateCells(cb func(cell GridCell)) {
+	grid.IterateRows(func(rowIndex int, row []GridCell) {
 		for _, cell := range row {
 			cb(cell)
 		}
 	})
 }
 
-func (g Grid) Clone() *Grid {
-	return NewGrid(g.dimensions.rows, g.dimensions.cols)
+func (grid Grid) Clone() *Grid {
+	return NewGrid(grid.dimensions.rows, grid.dimensions.cols)
 }

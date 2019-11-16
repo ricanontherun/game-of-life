@@ -32,6 +32,22 @@ type GridCell struct {
 	Pos   GridCellPosition
 }
 
+func (cell GridCell) IsAlive() bool {
+	return cell.Value == 1
+}
+
+func (cell GridCell) IsDead() bool {
+	return !cell.IsAlive()
+}
+
+func (cell GridCell) Kill() {
+	cell.Value = 0
+}
+
+func (cell GridCell) Resurrect() {
+	cell.Value = 1
+}
+
 type delta struct {
 	deltaRow int
 	deltaCol int
